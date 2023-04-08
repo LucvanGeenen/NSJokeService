@@ -1,0 +1,3 @@
+adapters:
+  jokes-api:
+    base-path: https://v2.jokeapi.dev/
