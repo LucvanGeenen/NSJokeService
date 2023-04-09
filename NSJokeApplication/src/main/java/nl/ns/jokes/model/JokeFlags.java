@@ -1,5 +1,6 @@
 package nl.ns.jokes.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import nl.ns.jokes.adapters.model.JokesApiFlags;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class JokeFlags {
 
     private boolean nsfw;

@@ -1,8 +1,9 @@
 package nl.ns.jokes.adapters;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.ns.jokes.adapters.model.JokesApiJoke;
 import nl.ns.jokes.adapters.model.JokesApiResponse;
 import nl.ns.jokes.model.Joke;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +23,7 @@ public class JokesApiAdapter {
     protected static final String URI = "/joke/Any?type=%s&amount=%s";
 
     private final RestTemplate jokesApiRestTemplate;
+    private final ObjectMapper objectMapper;
 
     public List<Joke> getJokesFromJokesApi() {
         return getExternalJokes("single", 16);
@@ -30,21 +31,35 @@ public class JokesApiAdapter {
 
     public List<Joke> getExternalJokes(final String type, final int amount) {
         try {
-            ResponseEntity<JokesApiResponse> response = jokesApiRestTemplate.getForEntity(String.format(URI, type, amount), JokesApiResponse.class);
-            if (null == response.getBody()) {
+            ResponseEntity<JokesApiResponse> responseEntity = jokesApiRestTemplate.getForEntity(String.format(URI, type, amount), JokesApiResponse.class);
+            if (null == responseEntity.getBody()) {
                 return Collections.emptyList();
             }
-
-            List<JokesApiJoke> externalJokes = response.getBody().getJokes();
-            return externalJokes.stream().map(Joke::new).collect(Collectors.toList());
+            JokesApiResponse jokesApiResponse = responseEntity.getBody();
+            if  (!jokesApiResponse.isError()){
+                return jokesApiResponse.getJokes().stream().map(Joke::new).toList();
+            }
+            return handleErrorFunctional(jokesApiResponse);
         } catch (HttpClientErrorException hcee) {
             log.error("Client exception occurred : {} ", hcee.getLocalizedMessage(), hcee);
+            //FIXME Needs to be changed
             throw new IllegalArgumentException();
         } catch (RestClientException rce) {
             // At this point is should always be an 5xx error
             log.error("Calling joke api resulted in an error ", rce);
+            //FIXME Needs to be changed
             throw new IllegalArgumentException();
         }
     }
 
+    private List<Joke> handleErrorFunctional(final JokesApiResponse jokesApiResponse){
+        log.error("Calling joke api resulted in an error, returning empty list");
+        try {
+            log.error(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jokesApiResponse));
+            return Collections.emptyList();
+        } catch (JsonProcessingException e) {
+            //FIXME Needs to be changed to a less generic one
+            throw new RuntimeException(e);
+        }
+    }
 }

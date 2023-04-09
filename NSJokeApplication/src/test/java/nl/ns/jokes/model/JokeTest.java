@@ -44,7 +44,7 @@ class JokeTest {
         Joke joke = new Joke(jokesApiJoke);
         assertThat(joke.getId()).isEqualTo(jokesApiJoke.getId());
         assertThat(joke.isSafe()).isEqualTo(jokesApiJoke.isSafe());
-        assertThat(joke.getJoke()).isEqualTo(jokesApiJoke.getJoke());
+        assertThat(joke.getActualJoke()).isEqualTo(jokesApiJoke.getJoke());
 
         assertThat(joke.getFlags()).isNotNull();
 

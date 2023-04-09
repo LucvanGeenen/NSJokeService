@@ -16,20 +16,23 @@ import static java.util.Arrays.asList;
 public class JokesService {
 
     private final JokesApiAdapter jokesApiAdapter;
+
     public Joke getShortestNonRacistNonSexistSafeJoke(){
         List<Joke> jokesFromApi = jokesApiAdapter.getJokesFromJokesApi();
 
-        removeBlacklisted(jokesFromApi, asList(BlacklistEnum.RACIST, BlacklistEnum.SEXIST));
+        List<Joke> safeJokesFromApi = jokesFromApi.stream().filter(Joke::isSafe).toList();
 
-        jokesFromApi.removeIf(joke -> !joke.isSafe());
+        List<Joke> blackListedRemoved = removeBlacklisted(safeJokesFromApi, asList(BlacklistEnum.RACIST, BlacklistEnum.SEXIST));
 
-        return jokesFromApi.stream()
-                .min(Comparator.comparing(joke -> joke.getJoke().length()))
+        return blackListedRemoved.stream()
+                .min(Comparator.comparing(joke -> joke.getActualJoke().length()))
                 .orElse(new Joke());
     }
 
-    private void removeBlacklisted(final List<Joke> jokes, final List<BlacklistEnum> blacklisted){
-        blacklisted.forEach(jokes::removeIf);
+    private List<Joke> removeBlacklisted(final List<Joke> jokes, final List<BlacklistEnum> blacklisted){
+        return jokes.stream()
+                .filter(joke -> blacklisted.stream().allMatch(listed -> listed.negate().test(joke)))
+                .toList();
     }
 
 }

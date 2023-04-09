@@ -1,0 +1,42 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/joke/Any?type=single&amount=16"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n\"error\": false,\n\"amount\": 10,\n\"jokes\": [\n{\n\"category\": \"Luc\",\n\"type\": \"single\",\n\"joke\": \"Your mama's so FAT she can't save files bigger than 4GB.\",\n\"flags\": {\n\"nsfw\": false,\n\"religious\": false,\n\"political\": false,\n\"racist\": false,\n\"sexist\": false,\n\"explicit\": true\n},\n\"id\": 9,\n\"safe\": false,\n\"lang\": \"en\"\n},\n{\n\"category\": \"Programming\",\n\"type\": \"single\",\n\"joke\": \"A man is smoking a cigarette and blowing smoke rings into the air. His girlfriend becomes irritated with the smoke and says \\\"Can't you see the warning on the cigarette pack? Smoking is hazardous to your health!\\\" to which the man replies, \\\"I am a programmer.  We don't worry about warnings; we only worry about errors.\\\"\",\n\"flags\": {\n\"nsfw\": false,\n\"religious\": false,\n\"political\": false,\n\"racist\": false,\n\"sexist\": false,\n\"explicit\": false\n},\n\"id\": 38,\n\"safe\": true,\n\"lang\": \"en\"\n},\n{\n\"category\": \"Dark\",\n\"type\": \"single\",\n\"joke\": \"My ex had an accident. I told the paramedics the wrong blood type for her. She'll finally experience what rejection is really like.\",\n\"flags\": {\n\"nsfw\": false,\n\"religious\": false,\n\"political\": false,\n\"racist\": false,\n\"sexist\": false,\n\"explicit\": false\n},\n\"id\": 152,\n\"safe\": false,\n\"lang\": \"en\"\n},\n{\n\"category\": \"Pun\",\n\"type\": \"single\",\n\"joke\": \"To whoever stole my copy of Microsoft Office, I will find you. You have my Word!\",\n\"flags\": {\n\"nsfw\": false,\n\"religious\": false,\n\"political\": false,\n\"racist\": false,\n\"sexist\": false,\n\"explicit\": false\n},\n\"id\": 191,\n\"safe\": true,\n\"lang\": \"en\"\n},\n{\n\"category\": \"Programming\",\n\"type\": \"single\",\n\"joke\": \"Have a great weekend!\\nI hope your code behaves the same on Monday as it did on Friday.\",\n\"flags\": {\n\"nsfw\": false,\n\"religious\": false,\n\"political\": false,\n\"racist\": false,\n\"sexist\": false,\n\"explicit\": false\n},\n\"id\": 44,\n\"safe\": true,\n\"lang\": \"en\"\n},\n{\n\"category\": \"Pun\",\n\"type\": \"single\",\n\"joke\": \"I have a joke about trickle down economics, but 99% of you will never get it.\",\n\"flags\": {\n\"nsfw\": false,\n\"religious\": false,\n\"political\": false,\n\"racist\": false,\n\"sexist\": false,\n\"explicit\": false\n},\n\"id\": 238,\n\"safe\": true,\n\"lang\": \"en\"\n},\n{\n\"category\": \"Misc\",\n\"type\": \"single\",\n\"joke\": \"Women are like KFC, once you're done with the breasts and thighs, you just have a greasy box to put your bone in.\",\n\"flags\": {\n\"nsfw\": true,\n\"religious\": false,\n\"political\": false,\n\"racist\": false,\n\"sexist\": true,\n\"explicit\": true\n},\n\"id\": 149,\n\"safe\": false,\n\"lang\": \"en\"\n},\n{\n\"category\": \"Pun\",\n\"type\": \"single\",\n\"joke\": \"Oysters hate to give away their pearls because they are shellfish.\",\n\"flags\": {\n\"nsfw\": false,\n\"religious\": false,\n\"political\": false,\n\"racist\": false,\n\"sexist\": false,\n\"explicit\": false\n},\n\"id\": 90,\n\"safe\": true,\n\"lang\": \"en\"\n},\n{\n\"category\": \"Programming\",\n\"type\": \"single\",\n\"joke\": \"\\\"We messed up the keming again guys.\\\"\",\n\"flags\": {\n\"nsfw\": false,\n\"religious\": false,\n\"political\": false,\n\"racist\": false,\n\"sexist\": false,\n\"explicit\": false\n},\n\"id\": 20,\n\"safe\": true,\n\"lang\": \"en\"\n},\n{\n\"category\": \"Pun\",\n\"type\": \"single\",\n\"joke\": \"I bought some shoes from a drug dealer. I don't know what he laced them with, but I was tripping all day!\",\n\"flags\": {\n\"nsfw\": false,\n\"religious\": false,\n\"political\": false,\n\"racist\": false,\n\"sexist\": false,\n\"explicit\": false\n},\n\"id\": 204,\n\"safe\": false,\n\"lang\": \"en\"\n}\n]\n}"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/joke/Any?type=single&amount=5"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{}"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/joke/Any?type=single&amount=10"
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

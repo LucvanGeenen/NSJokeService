@@ -1,0 +1,10 @@
+service:
+  name: joke-service
+
+wiremock:
+  port: 8090
+
+adapters:
+  jokes-api:
+    base-path: http://localhost:${wiremock.port}
+

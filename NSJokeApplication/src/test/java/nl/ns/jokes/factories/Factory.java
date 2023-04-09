@@ -48,11 +48,11 @@ public class Factory {
     public static List<Joke> createNotWantedJokes(){
         Joke racialJoke = new Joke();
         racialJoke.setSafe(true);
-        racialJoke.setJoke("Racial Joke");
+        racialJoke.setActualJoke("Racial Joke");
         racialJoke.getFlags().setRacist(true);
 
         Joke sexistJoke = new Joke();
-        sexistJoke.setJoke("sexist Joke");
+        sexistJoke.setActualJoke("sexist Joke");
         sexistJoke.setSafe(true);
         sexistJoke.getFlags().setSexist(true);
 
@@ -63,26 +63,26 @@ public class Factory {
     public static List<Joke> createMixedJokes(){
         Joke racialJoke = new Joke();
         racialJoke.setSafe(true);
-        racialJoke.setJoke("Racial Joke");
+        racialJoke.setActualJoke("Racial Joke");
         racialJoke.getFlags().setRacist(true);
 
         Joke sexistJoke = new Joke();
-        sexistJoke.setJoke("sexist Joke");
+        sexistJoke.setActualJoke("sexist Joke");
         sexistJoke.setSafe(true);
         sexistJoke.getFlags().setSexist(true);
 
         Joke religiousJoke = new Joke();
-        religiousJoke.setJoke("Religious shortest Joke");
+        religiousJoke.setActualJoke("Religious shortest Joke");
         religiousJoke.setSafe(true);
         religiousJoke.getFlags().setReligious(true);
 
         Joke religiousJoke2 = new Joke();
-        religiousJoke2.setJoke("Religious a bit longer Joke");
+        religiousJoke2.setActualJoke("Religious a bit longer Joke");
         religiousJoke2.setSafe(true);
         religiousJoke2.getFlags().setReligious(true);
 
         Joke explicitJoke = new Joke();
-        explicitJoke.setJoke("Explicit Joke");
+        explicitJoke.setActualJoke("Explicit Joke");
         explicitJoke.setSafe(false);
         explicitJoke.getFlags().setReligious(true);
 

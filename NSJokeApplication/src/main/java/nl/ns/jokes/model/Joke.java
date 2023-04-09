@@ -1,5 +1,6 @@
 package nl.ns.jokes.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,10 +9,11 @@ import nl.ns.jokes.adapters.model.JokesApiJoke;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class Joke {
     private long id;
     private boolean safe;
-    private String joke;
+    private String actualJoke;
 
     private JokeFlags flags = new JokeFlags();
 
@@ -42,7 +44,7 @@ public class Joke {
     public Joke(final JokesApiJoke jokesApiJoke){
         this.id = jokesApiJoke.getId();
         this.safe = jokesApiJoke.isSafe();
-        this.joke = jokesApiJoke.getJoke();
+        this.actualJoke = jokesApiJoke.getJoke();
         this.flags = jokesApiJoke.getFlags() != null ? new JokeFlags(jokesApiJoke.getFlags()) : null;
     }
 

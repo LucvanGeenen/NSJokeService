@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class JokesServiceTest {
+class JokesServiceTest {
 
     @Mock private JokesApiAdapter jokesApiAdapter;
 
@@ -30,7 +30,7 @@ public class JokesServiceTest {
 
         Joke foundJoke = jokesService.getShortestNonRacistNonSexistSafeJoke();
 
-        assertThat(foundJoke.getJoke()).isEqualTo("Religious shortest Joke");
+        assertThat(foundJoke.getActualJoke()).isEqualTo("Religious shortest Joke");
         assertThat(foundJoke.isReligious()).isTrue();
     }
 
@@ -40,7 +40,7 @@ public class JokesServiceTest {
         when(jokesApiAdapter.getJokesFromJokesApi()).thenReturn(jokes);
 
         Joke foundJoke = jokesService.getShortestNonRacistNonSexistSafeJoke();
-        assertThat(foundJoke.getJoke()).isNull();
+        assertThat(foundJoke.getActualJoke()).isNull();
         assertThat(foundJoke.getId()).isZero();
 
     }

@@ -15,7 +15,7 @@ public class JokeResponse {
 
     public JokeResponse(final Joke joke){
         this.id = joke.getId();
-        this.joke = joke.getJoke();
+        this.joke = joke.getActualJoke();
     }
 
 }

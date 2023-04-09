@@ -1,5 +1,8 @@
 package nl.ns.jokes.adapters;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import nl.ns.jokes.adapters.model.JokesApiFlags;
 import nl.ns.jokes.adapters.model.JokesApiJoke;
 import nl.ns.jokes.adapters.model.JokesApiResponse;
@@ -20,15 +23,19 @@ import java.util.stream.IntStream;
 import static java.util.Arrays.asList;
 import static nl.ns.jokes.adapters.JokesApiAdapter.URI;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class JokesApiAdapterTest {
 
     @Mock private RestTemplate jokesApiRestTemplate;
+    @Mock private ObjectMapper objectMapper;
 
     @InjectMocks
     private JokesApiAdapter jokesApiAdapter;
+
+    @Mock private ObjectWriter objectWriter;
 
     @Test
     void getJokesFromJokesApi_empty_repsonse_body() {
@@ -40,6 +47,22 @@ class JokesApiAdapterTest {
         List<Joke> jokesFromApi = jokesApiAdapter.getJokesFromJokesApi();
 
         assertThat(jokesFromApi).isEmpty();
+    }
+
+    @Test
+    void getJokesFromJokesApi_repsonse_body() throws JsonProcessingException {
+        JokesApiResponse jokesApiResponse = new JokesApiResponse();
+        jokesApiResponse.setError(true);
+
+        when(objectMapper.writerWithDefaultPrettyPrinter()).thenReturn(objectWriter);
+        when(jokesApiRestTemplate.getForEntity(String.format(URI, "single", 16), JokesApiResponse.class))
+                .thenReturn(ResponseEntity.ok(jokesApiResponse));
+
+        List<Joke> jokesFromApi = jokesApiAdapter.getJokesFromJokesApi();
+
+        assertThat(jokesFromApi).isEmpty();
+        verify(objectMapper).writerWithDefaultPrettyPrinter();
+        verify(objectWriter).writeValueAsString(jokesApiResponse);
     }
 
     @Test
@@ -78,8 +101,8 @@ class JokesApiAdapterTest {
                 .forEach(index -> assertJoke(result.get(index), jokesApiJokes.get(index)));
     }
 
-        private void assertJoke(Joke actual, JokesApiJoke expected) {
-        assertThat(actual.getJoke()).isEqualTo(expected.getJoke());
+    private void assertJoke(Joke actual, JokesApiJoke expected) {
+        assertThat(actual.getActualJoke()).isEqualTo(expected.getJoke());
         assertThat(actual.getId()).isEqualTo(expected.getId());
         assertThat(actual.isSafe()).isEqualTo(expected.isSafe());
 
