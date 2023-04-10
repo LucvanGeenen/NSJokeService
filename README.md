@@ -10,6 +10,10 @@ This application is build with :
 Once started the swagger page can found on 
  - [my machine](http://localhost:8080/swagger-ui.html)
 
+## Unit integration test
+
+I've also added a unit integration test, just the happy flow
+
 ## ControllerAdvice
 
 As a bonus I've added a controller advice for handling NSServiceException which will be thrown when a non functional error is thrown.

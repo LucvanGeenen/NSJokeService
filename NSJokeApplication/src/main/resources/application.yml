@@ -2,4 +2,4 @@ service:
   name: joke-application
 adapters:
   jokes-api:
-    base-path: https://v2.jokeapi.dev/
+    base-path: https://v2.jokeapi.dev/joke

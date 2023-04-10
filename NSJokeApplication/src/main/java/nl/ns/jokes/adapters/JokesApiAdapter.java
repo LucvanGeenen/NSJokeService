@@ -5,40 +5,43 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.ns.jokes.adapters.model.JokesApiResponse;
+import nl.ns.jokes.enums.CategoryEnum;
 import nl.ns.jokes.exception.NSExceptionsEnum;
 import nl.ns.jokes.exception.NSServiceException;
 import nl.ns.jokes.model.Joke;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class JokesApiAdapter {
 
-    protected static final String URI = "/joke/Any?type=%s&amount=%s";
-
     private final RestTemplate jokesApiRestTemplate;
     private final ObjectMapper objectMapper;
 
     public List<Joke> getJokesFromJokesApi() {
-        return getExternalJokes("single", 16);
+        TreeMap<String, String > parameters = new TreeMap<>();
+        parameters.put("type", "single");
+        parameters.put("amount", "16");
+        return getExternalJokes(createUri(CategoryEnum.ANY, parameters));
     }
 
-    public List<Joke> getExternalJokes(final String type, final int amount) {
+    private List<Joke> getExternalJokes(final String uri) {
         try {
-            ResponseEntity<JokesApiResponse> responseEntity = jokesApiRestTemplate.getForEntity(String.format(URI, type, amount), JokesApiResponse.class);
+            ResponseEntity<JokesApiResponse> responseEntity = jokesApiRestTemplate.getForEntity(uri, JokesApiResponse.class);
             if (null == responseEntity.getBody()) {
                 return Collections.emptyList();
             }
             JokesApiResponse jokesApiResponse = responseEntity.getBody();
-            if  (!jokesApiResponse.isError()){
+            if (!jokesApiResponse.isError()) {
                 return jokesApiResponse.getJokes().stream().map(Joke::new).toList();
             }
             return handleErrorFunctional(jokesApiResponse);
@@ -52,7 +55,8 @@ public class JokesApiAdapter {
         }
     }
 
-    private List<Joke> handleErrorFunctional(final JokesApiResponse jokesApiResponse){
+
+    private List<Joke> handleErrorFunctional(final JokesApiResponse jokesApiResponse) {
         log.error("Calling joke api resulted in an error, returning empty list");
         try {
             log.error(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jokesApiResponse));
@@ -60,5 +64,17 @@ public class JokesApiAdapter {
         } catch (JsonProcessingException e) {
             throw new NSServiceException(NSExceptionsEnum.INTERNAL_SERVER_ERROR, e.getLocalizedMessage());
         }
+    }
+
+    private String createUri(final CategoryEnum category, final Map<String, String> parameters) {
+        final LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+        parameters.forEach(params::add);
+
+        return UriComponentsBuilder.newInstance()
+                .path(category.getUrlParameterCategory())
+                .queryParams(params)
+                .build().toUriString();
+
     }
 }

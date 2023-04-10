@@ -16,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +29,15 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
-import static nl.ns.jokes.adapters.JokesApiAdapter.URI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class JokesApiAdapterTest {
+
+    private static final String URI = "/Any?amount=16&type=single";
 
     @Mock private RestTemplate jokesApiRestTemplate;
     @Mock private ObjectMapper objectMapper;
@@ -47,7 +51,7 @@ class JokesApiAdapterTest {
     void getJokesFromJokesApi_empty_repsonse_body() {
         JokesApiResponse jokesApiResponse = null;
 
-        when(jokesApiRestTemplate.getForEntity(String.format(URI, "single", 16), JokesApiResponse.class))
+        when(jokesApiRestTemplate.getForEntity(URI, JokesApiResponse.class))
                 .thenReturn(ResponseEntity.ok(jokesApiResponse));
 
         List<Joke> jokesFromApi = jokesApiAdapter.getJokesFromJokesApi();
@@ -61,7 +65,7 @@ class JokesApiAdapterTest {
         jokesApiResponse.setError(true);
 
         when(objectMapper.writerWithDefaultPrettyPrinter()).thenReturn(objectWriter);
-        when(jokesApiRestTemplate.getForEntity(String.format(URI, "single", 16), JokesApiResponse.class))
+        when(jokesApiRestTemplate.getForEntity(URI, JokesApiResponse.class))
                 .thenReturn(ResponseEntity.ok(jokesApiResponse));
 
         List<Joke> jokesFromApi = jokesApiAdapter.getJokesFromJokesApi();
@@ -77,7 +81,7 @@ class JokesApiAdapterTest {
         JokesApiJoke jokesApiJoke = Factory.createJokesApiJoke();
         jokesApiResponse.getJokes().add(jokesApiJoke);
 
-        when(jokesApiRestTemplate.getForEntity(String.format(URI, "single", 16), JokesApiResponse.class))
+        when(jokesApiRestTemplate.getForEntity(URI, JokesApiResponse.class))
                 .thenReturn(ResponseEntity.ok(jokesApiResponse));
 
         List<Joke> jokesFromApi = jokesApiAdapter.getJokesFromJokesApi();
@@ -96,7 +100,7 @@ class JokesApiAdapterTest {
         List<JokesApiJoke> jokesApiJokes = asList(jokesApiJoke1, jokesApiJoke2);
         jokesApiResponse.getJokes().addAll(jokesApiJokes);
 
-        when(jokesApiRestTemplate.getForEntity(String.format(URI, "single", 16), JokesApiResponse.class))
+        when(jokesApiRestTemplate.getForEntity(URI, JokesApiResponse.class))
                 .thenReturn(ResponseEntity.ok(jokesApiResponse));
 
         List<Joke> result = jokesApiAdapter.getJokesFromJokesApi();
@@ -112,7 +116,7 @@ class JokesApiAdapterTest {
         HttpServerErrorException error =
                 HttpServerErrorException.create(HttpStatusCode.valueOf(500), "myMessage", new HttpHeaders(), null, null);
 
-        doThrow(error).when(jokesApiRestTemplate).getForEntity(String.format(URI, "single", 16), JokesApiResponse.class);
+        doThrow(error).when(jokesApiRestTemplate).getForEntity(URI, JokesApiResponse.class);
 
         NSServiceException nsse = assertThrows(NSServiceException.class, () -> jokesApiAdapter.getJokesFromJokesApi());
 
@@ -125,7 +129,7 @@ class JokesApiAdapterTest {
         HttpClientErrorException error =
                 HttpClientErrorException.create(HttpStatusCode.valueOf(400), "Bad request", new HttpHeaders(), null, null);
 
-        doThrow(error).when(jokesApiRestTemplate).getForEntity(String.format(URI, "single", 16), JokesApiResponse.class);
+        doThrow(error).when(jokesApiRestTemplate).getForEntity(URI, JokesApiResponse.class);
 
         NSServiceException nsse = assertThrows(NSServiceException.class, () -> jokesApiAdapter.getJokesFromJokesApi());
 

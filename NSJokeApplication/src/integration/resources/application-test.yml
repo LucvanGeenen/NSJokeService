@@ -6,5 +6,5 @@ wiremock:
 
 adapters:
   jokes-api:
-    base-path: http://localhost:${wiremock.port}
+    base-path: http://localhost:${wiremock.port}/joke
 
