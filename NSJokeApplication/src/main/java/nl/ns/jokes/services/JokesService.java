@@ -3,6 +3,7 @@ package nl.ns.jokes.services;
 import lombok.RequiredArgsConstructor;
 import nl.ns.jokes.adapters.JokesApiAdapter;
 import nl.ns.jokes.enums.BlacklistEnum;
+import nl.ns.jokes.enums.CategoryEnum;
 import nl.ns.jokes.model.Joke;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,10 @@ public class JokesService {
         return blackListedRemoved.stream()
                 .min(Comparator.comparing(joke -> joke.getActualJoke().length()))
                 .orElse(new Joke());
+    }
+
+    public List<Joke> search(final CategoryEnum category, final int amount, final List<BlacklistEnum> blacklisted){
+        return jokesApiAdapter.getJokesFromJokesApi(category, amount, blacklisted);
     }
 
     private List<Joke> removeBlacklisted(final List<Joke> jokes, final List<BlacklistEnum> blacklisted){

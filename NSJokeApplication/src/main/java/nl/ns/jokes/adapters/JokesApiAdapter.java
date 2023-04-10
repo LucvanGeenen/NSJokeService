@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.ns.jokes.adapters.model.JokesApiResponse;
+import nl.ns.jokes.enums.BlacklistEnum;
 import nl.ns.jokes.enums.CategoryEnum;
 import nl.ns.jokes.exception.NSExceptionsEnum;
 import nl.ns.jokes.exception.NSServiceException;
 import nl.ns.jokes.model.Joke;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -18,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -32,6 +35,16 @@ public class JokesApiAdapter {
         parameters.put("type", "single");
         parameters.put("amount", "16");
         return getExternalJokes(createUri(CategoryEnum.ANY, parameters));
+    }
+
+    public List<Joke> getJokesFromJokesApi(final CategoryEnum category, final int amount, final List<BlacklistEnum> blackListed){
+        TreeMap<String, String > parameters = new TreeMap<>();
+        parameters.put("amount", String.valueOf(amount));
+
+        if (!CollectionUtils.isEmpty(blackListed))
+            parameters.put("blacklistFlags", blackListed.stream().map(BlacklistEnum::name).map(String::toLowerCase).collect(Collectors.joining(",")));
+
+        return getExternalJokes(createUri(category, parameters));
     }
 
     private List<Joke> getExternalJokes(final String uri) {
