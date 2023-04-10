@@ -69,7 +69,9 @@ public class JokesController {
             @RequestParam(required = false) final List<BlacklistEnum> blackListed
     ) {
 
-        log.info("Request received for retrieving the shortest, non racial, non sexist and safe joke");
+        log.info("Request received for retrieving the {} jokes of category {} and blacklisted {}",
+                amount, categoryEnum, blackListed.stream().map(BlacklistEnum::name).toList());
+
         List<Joke> jokes = jokesService.search(categoryEnum, amount, blackListed);
 
         return ResponseEntity.ok(

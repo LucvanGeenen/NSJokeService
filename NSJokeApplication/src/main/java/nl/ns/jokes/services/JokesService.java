@@ -1,6 +1,8 @@
 package nl.ns.jokes.services;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nl.ns.jokes.adapters.JokesApiAdapter;
 import nl.ns.jokes.enums.BlacklistEnum;
 import nl.ns.jokes.enums.CategoryEnum;
@@ -14,6 +16,7 @@ import static java.util.Arrays.asList;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JokesService {
 
     private final JokesApiAdapter jokesApiAdapter;
@@ -31,7 +34,17 @@ public class JokesService {
     }
 
     public List<Joke> search(final CategoryEnum category, final int amount, final List<BlacklistEnum> blacklisted){
-        return jokesApiAdapter.getJokesFromJokesApi(category, amount, blacklisted);
+        List<Joke> jokesFromApi = jokesApiAdapter.getJokesFromJokesApi(category, amount, blacklisted);
+
+        log.info("found {} jokes, start filtering jokes", jokesFromApi.size());
+
+        List<Joke> actualJokes = jokesFromApi.stream()
+                .filter(joke -> StringUtils.isNotBlank(joke.getActualJoke()))
+                .toList();
+
+        log.info("{} jokes were filtered out", jokesFromApi.size() - actualJokes.size());
+
+        return actualJokes;
     }
 
     private List<Joke> removeBlacklisted(final List<Joke> jokes, final List<BlacklistEnum> blacklisted){
