@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.ns.jokes.adapters.model.JokesApiResponse;
+import nl.ns.jokes.exception.NSExceptionsEnum;
+import nl.ns.jokes.exception.NSServiceException;
 import nl.ns.jokes.model.Joke;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -42,13 +44,11 @@ public class JokesApiAdapter {
             return handleErrorFunctional(jokesApiResponse);
         } catch (HttpClientErrorException hcee) {
             log.error("Client exception occurred : {} ", hcee.getLocalizedMessage(), hcee);
-            //FIXME Needs to be changed
-            throw new IllegalArgumentException();
+            throw new NSServiceException(NSExceptionsEnum.getNSExceptionsEnumByHttpStatusCode(hcee.getStatusCode()), hcee.getLocalizedMessage());
         } catch (RestClientException rce) {
             // At this point is should always be an 5xx error
             log.error("Calling joke api resulted in an error ", rce);
-            //FIXME Needs to be changed
-            throw new IllegalArgumentException();
+            throw new NSServiceException(NSExceptionsEnum.INTERNAL_SERVER_ERROR, rce.getLocalizedMessage());
         }
     }
 
@@ -58,8 +58,7 @@ public class JokesApiAdapter {
             log.error(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jokesApiResponse));
             return Collections.emptyList();
         } catch (JsonProcessingException e) {
-            //FIXME Needs to be changed to a less generic one
-            throw new RuntimeException(e);
+            throw new NSServiceException(NSExceptionsEnum.INTERNAL_SERVER_ERROR, e.getLocalizedMessage());
         }
     }
 }

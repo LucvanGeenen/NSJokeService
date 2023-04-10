@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import nl.ns.jokes.adapters.model.JokesApiFlags;
 import nl.ns.jokes.adapters.model.JokesApiJoke;
 import nl.ns.jokes.adapters.model.JokesApiResponse;
+import nl.ns.jokes.exception.NSExceptionsEnum;
+import nl.ns.jokes.exception.NSServiceException;
 import nl.ns.jokes.factories.Factory;
 import nl.ns.jokes.model.Joke;
 import nl.ns.jokes.model.JokeFlags;
@@ -14,7 +16,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -23,8 +29,8 @@ import java.util.stream.IntStream;
 import static java.util.Arrays.asList;
 import static nl.ns.jokes.adapters.JokesApiAdapter.URI;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JokesApiAdapterTest {
@@ -99,6 +105,32 @@ class JokesApiAdapterTest {
 
         IntStream.range(0, result.size())
                 .forEach(index -> assertJoke(result.get(index), jokesApiJokes.get(index)));
+    }
+
+    @Test
+    void getJokesFromJokesApi_api_throws_restclientexception(){
+        HttpServerErrorException error =
+                HttpServerErrorException.create(HttpStatusCode.valueOf(500), "myMessage", new HttpHeaders(), null, null);
+
+        doThrow(error).when(jokesApiRestTemplate).getForEntity(String.format(URI, "single", 16), JokesApiResponse.class);
+
+        NSServiceException nsse = assertThrows(NSServiceException.class, () -> jokesApiAdapter.getJokesFromJokesApi());
+
+        assertThat(nsse.getLocalizedMessage()).isEqualTo("500 myMessage");
+        assertThat(nsse.getExceptionsEnum()).isEqualTo(NSExceptionsEnum.INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    void getJokesFromJokesApi_api_throws_httpclienterroe(){
+        HttpClientErrorException error =
+                HttpClientErrorException.create(HttpStatusCode.valueOf(400), "Bad request", new HttpHeaders(), null, null);
+
+        doThrow(error).when(jokesApiRestTemplate).getForEntity(String.format(URI, "single", 16), JokesApiResponse.class);
+
+        NSServiceException nsse = assertThrows(NSServiceException.class, () -> jokesApiAdapter.getJokesFromJokesApi());
+
+        assertThat(nsse.getLocalizedMessage()).isEqualTo("400 Bad request");
+        assertThat(nsse.getExceptionsEnum()).isEqualTo(NSExceptionsEnum.BAD_REQUEST);
     }
 
     private void assertJoke(Joke actual, JokesApiJoke expected) {

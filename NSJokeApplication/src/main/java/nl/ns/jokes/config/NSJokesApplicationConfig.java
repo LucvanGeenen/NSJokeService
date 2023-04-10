@@ -8,8 +8,6 @@ public class NSJokesApplicationConfig {
 
     @Bean
     public ObjectMapper objectMapper(){
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper;
+        return new ObjectMapper().registerModule(new JavaTimeModule());
     }
 }

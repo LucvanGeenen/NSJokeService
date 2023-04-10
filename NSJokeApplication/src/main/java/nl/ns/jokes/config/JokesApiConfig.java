@@ -14,9 +14,7 @@ public class JokesApiConfig {
 
     @Bean
     public RestTemplate jokesApiRestTemplate(){
-        return new RestTemplateBuilder()
-                .rootUri(basePath)
-                .build();
+        return new RestTemplateBuilder().rootUri(basePath).build();
     }
 
 }
